@@ -178,8 +178,11 @@ def main(argv: list[str] | None = None) -> int:
             print('Sanitized report saved.')  # Do not print paths or private file names
         else:
             print(text, end='')
-    except (JKCFGError, OSError) as exc:
+    except JKCFGError as exc:
         print(f'Error: {exc}', file=sys.stderr)
+        return 2
+    except OSError:
+        print('Error: unable to access input/output file', file=sys.stderr)
         return 2
     return 0
 
