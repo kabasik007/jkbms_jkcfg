@@ -167,6 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--output', '-o', type=Path, help='Save sanitized report to a file')
     args = parser.parse_args(argv)
     try:
+        # Prevent overwriting the raw backup, including aliases/symlinks/hard links.
+        if args.output and args.output.exists() and args.file.exists() and args.output.samefile(args.file):
+            raise JKCFGError('Output must not overwrite the original .jkcfg backup')
         report = decode(args.file.read_bytes())
         text = (json.dumps(report, ensure_ascii=False, indent=2) + '\n'
                 if args.format == 'json' else render_markdown(report))
