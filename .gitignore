@@ -1,0 +1,15 @@
+# JK BMS raw exports can contain serials and passwords.
+*.jkcfg
+*.bin
+*.dump
+*.hex
+# Generated reports (review manually before publishing).
+reports/
+sanitized.json
+sanitized.md
+settings.json
+settings.md
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
