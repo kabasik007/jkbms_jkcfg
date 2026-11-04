@@ -1,9 +1,11 @@
 """Self-contained tests: synthetic data only, no real user configuration."""
 import json
 import struct
+import tempfile
 import unittest
+from pathlib import Path
 
-from jkcfg import HEADER, JKCFGError, decode, render_markdown
+from jkcfg import HEADER, JKCFGError, decode, render_markdown, main
 
 
 def fixture() -> bytes:
@@ -50,6 +52,14 @@ class JKCFGTests(unittest.TestCase):
         data[320] ^= 1
         with self.assertRaisesRegex(JKCFGError, 'checksum'):
             decode(bytes(data))
+
+    def test_input_cannot_be_overwritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'backup.jkcfg'
+            original = fixture()
+            path.write_bytes(original)
+            self.assertEqual(main([str(path), '--output', str(path)]), 2)
+            self.assertEqual(path.read_bytes(), original)
 
     def test_rejects_unsupported_input(self):
         with self.assertRaisesRegex(JKCFGError, 'Expected'):
